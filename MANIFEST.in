@@ -1,0 +1,5 @@
+recursive-include src/dynareadout/src *.*
+recursive-include src/dynareadout/src/cpp *.*
+recursive-include src/dynareadout/src/python *.*
+recursive-include src/include *.*
+include src/dynareadout/README.md
