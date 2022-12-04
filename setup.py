@@ -37,14 +37,7 @@ dynareadout = Extension(
 
 setup(
   name='dynareadout',
-  version='4.0',
-  author='PucklaJ',
-  description='Blah Blah',
-  long_description='file: src/dynareadout/README.md',
-  url='https://github.com/PucklaJ/dynareadout',
-  classifiers=[
-    
-  ],
+  version='0.4',
   ext_modules=[dynareadout],
   zip_safe=False,
   include_package_data=True
