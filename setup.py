@@ -8,7 +8,7 @@ dynareadout_dir = os.path.join('src', 'dynareadout')
 dynareadout = Extension(
   name='dynareadout',
   include_dirs=[
-    os.path.join(this_dir, 'src', 'include'),
+    os.path.join(this_dir, 'src', 'pybind11' , 'include'),
     os.path.join(dynareadout_dir, 'src'),
     os.path.join(dynareadout_dir, 'src', 'cpp')
   ],
