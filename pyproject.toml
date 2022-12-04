@@ -15,7 +15,7 @@ classifiers = [
   "Programming Language :: C",
   "Programming Language :: C++",
   "License :: OSI Approved :: zlib/libpng License",
-  "Operating System :: Microsoft Windows",
+  "Operating System :: Microsoft :: Windows",
   "Operating System :: MacOS",
   "Operating System :: POSIX :: Linux",
   "Topic :: Scientific/Engineering",

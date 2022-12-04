@@ -14,16 +14,13 @@ dynareadout = Extension(
   ],
   sources=[
     # C Source Files
-    os.path.join(dynareadout_dir, 'src', 'binary_search.c'),
     os.path.join(dynareadout_dir, 'src', 'binout.c'),
-    os.path.join(dynareadout_dir, 'src', 'binout_directory.c'),
     os.path.join(dynareadout_dir, 'src', 'binout_glob.c'),
     os.path.join(dynareadout_dir, 'src', 'd3_buffer.c'),
     os.path.join(dynareadout_dir, 'src', 'd3plot.c'),
     os.path.join(dynareadout_dir, 'src', 'd3plot_data.c'),
     os.path.join(dynareadout_dir, 'src', 'd3plot_state.c'),
     os.path.join(dynareadout_dir, 'src', 'path.c'),
-    os.path.join(dynareadout_dir, 'src', 'path_view.c'),
     # C++ Source Files
     os.path.join(dynareadout_dir, 'src', 'cpp', 'binout.cpp'),
     os.path.join(dynareadout_dir, 'src', 'cpp', 'd3plot.cpp'),
