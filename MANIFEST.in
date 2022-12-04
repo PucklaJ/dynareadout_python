@@ -3,5 +3,4 @@ recursive-include src/dynareadout/src *.*
 recursive-include src/dynareadout/src/cpp *.*
 recursive-include src/dynareadout/src/python *.*
 recursive-include src/pybind11/include *.*
-include src/dynareadout/README.md
 include src/pybind11/LICENSE
