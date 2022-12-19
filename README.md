@@ -108,6 +108,8 @@ python setup.py sdist
 python -m twine upload --repository testpypi dist/*
 ```
 
+Then insert `__token__` as username and the token as password.
+
 6. Install package from `test.pypi.org` to test it
 
 ```console
