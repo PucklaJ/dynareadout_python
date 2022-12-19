@@ -83,8 +83,6 @@ This library is also available for C and C++ this version can be found [here](ht
 
 ## Installation
 
-*The library has not yet been uploaded to the official PyPI*
-
 ```console
 python -m pip install dynareadout
 ```
