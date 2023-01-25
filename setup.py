@@ -5,8 +5,16 @@ from setuptools.extension import Extension
 this_dir = os.path.dirname(os.path.abspath(__file__))
 dynareadout_dir = os.path.join('src', 'dynareadout')
 
+compile_args = []
+if os.name == "nt":
+    compile_args.append("/std:c++17")
+    compile_args.append("/w")
+else:
+    compile_args.append("-std=c++17")
+
 dynareadout = Extension(
     name='dynareadout',
+    extra_compile_args=compile_args,
     include_dirs=[
         os.path.join(this_dir, 'src', 'pybind11', 'include'),
         os.path.join(dynareadout_dir, 'src'),
