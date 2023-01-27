@@ -116,6 +116,16 @@ python -m pip install --upgrade --no-build-isolation --index-url https://test.py
 
 7. If it works upload it to `pypi.org`
 
+8. Create windows wheel
+
+```console
+python -m build
+```
+
+9. Upload windows wheel to `test.pypi.org` and test it.
+
+10. If it works upload it to `pypi.org`
+
 ```console
 python -m twine upload dist/*
 ```
