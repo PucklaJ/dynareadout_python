@@ -11,6 +11,7 @@ if os.name == "nt":
     compile_args.append("/w")
 else:
     compile_args.append("-std=c++17")
+    compile_args.append("-w")
 
 dynareadout = Extension(
     name='dynareadout',
@@ -26,9 +27,11 @@ dynareadout = Extension(
         os.path.join(dynareadout_dir, 'src', 'binout.c'),
         os.path.join(dynareadout_dir, 'src', 'binout_directory.c'),
         os.path.join(dynareadout_dir, 'src', 'binout_glob.c'),
+        os.path.join(dynareadout_dir, 'src', 'binout_read.c'),
         os.path.join(dynareadout_dir, 'src', 'd3_buffer.c'),
         os.path.join(dynareadout_dir, 'src', 'd3plot.c'),
         os.path.join(dynareadout_dir, 'src', 'd3plot_data.c'),
+        os.path.join(dynareadout_dir, 'src', 'd3plot_part_nodes.c'),
         os.path.join(dynareadout_dir, 'src', 'd3plot_state.c'),
         os.path.join(dynareadout_dir, 'src', 'path.c'),
         os.path.join(dynareadout_dir, 'src', 'path_view.c'),
@@ -43,7 +46,7 @@ dynareadout = Extension(
     ])
 
 setup(name='dynareadout',
-      version='22.12',
+      version='23.01',
       ext_modules=[dynareadout],
       zip_safe=False,
       include_package_data=True)

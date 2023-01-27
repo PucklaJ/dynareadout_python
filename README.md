@@ -111,7 +111,7 @@ Then insert `__token__` as username and the token as password.
 6. Install package from `test.pypi.org` to test it
 
 ```console
-python -m pip install --no-build-isolation --index-url https://test.pypi.org/simple/ dynareadout
+python -m pip install --upgrade --no-build-isolation --index-url https://test.pypi.org/simple/ dynareadout
 ```
 
 7. If it works upload it to `pypi.org`
