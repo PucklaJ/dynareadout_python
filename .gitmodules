@@ -1,7 +1,7 @@
 [submodule "src/dynareadout"]
 	path = lib/dynareadout
 	url = https://github.com/PucklaJ/dynareadout.git
-	branch = d40c917000b63777bd52b04e62ee8d68bbd804fa
+	branch = master
 [submodule "src/pybind11"]
 	path = lib/pybind11
 	url = https://github.com/pybind/pybind11.git
