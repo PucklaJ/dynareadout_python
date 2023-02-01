@@ -3,7 +3,7 @@ from setuptools import setup
 from setuptools.extension import Extension
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
-dynareadout_dir = os.path.join('src', 'dynareadout')
+dynareadout_dir = os.path.join('lib', 'dynareadout')
 
 compile_args = []
 if os.name == "nt":
@@ -13,11 +13,11 @@ else:
     compile_args.append("-std=c++17")
     compile_args.append("-w")
 
-dynareadout = Extension(
-    name='dynareadout',
+dynareadout_c = Extension(
+    name='dynareadout_c',
     extra_compile_args=compile_args,
     include_dirs=[
-        os.path.join(this_dir, 'src', 'pybind11', 'include'),
+        os.path.join(this_dir, 'lib', 'pybind11', 'include'),
         os.path.join(dynareadout_dir, 'src'),
         os.path.join(dynareadout_dir, 'src', 'cpp')
     ],
@@ -46,7 +46,7 @@ dynareadout = Extension(
     ])
 
 setup(name='dynareadout',
-      version='23.01',
-      ext_modules=[dynareadout],
+      version='23.01.1',
+      ext_modules=[dynareadout_c],
       zip_safe=False,
       include_package_data=True)

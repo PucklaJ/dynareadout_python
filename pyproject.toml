@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dynareadout"
-version = "23.01"
+version = "23.01.1"
 authors = [
   { name = "PucklaJ", email = "jonaas.pucher000000@gmail.com"},
 ]
@@ -19,6 +19,9 @@ classifiers = [
   "Operating System :: MacOS",
   "Operating System :: POSIX :: Linux",
   "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "lsst-utils"
 ]
 
 [project.urls]
