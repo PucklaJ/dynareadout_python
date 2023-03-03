@@ -33,20 +33,24 @@ dynareadout_c = Extension(
         os.path.join(dynareadout_dir, 'src', 'd3plot_data.c'),
         os.path.join(dynareadout_dir, 'src', 'd3plot_part_nodes.c'),
         os.path.join(dynareadout_dir, 'src', 'd3plot_state.c'),
+        os.path.join(dynareadout_dir, 'src', 'extra_string.c'),
+        os.path.join(dynareadout_dir, 'src', 'key.c'),
         os.path.join(dynareadout_dir, 'src', 'path.c'),
         os.path.join(dynareadout_dir, 'src', 'path_view.c'),
         # C++ Source Files
         os.path.join(dynareadout_dir, 'src', 'cpp', 'binout.cpp'),
         os.path.join(dynareadout_dir, 'src', 'cpp', 'd3plot.cpp'),
         os.path.join(dynareadout_dir, 'src', 'cpp', 'd3plot_part.cpp'),
+        os.path.join(dynareadout_dir, 'src', 'cpp', 'key.cpp'),
         # C++ Source Files for pybind11 module
         os.path.join(dynareadout_dir, 'src', 'python', 'pybind11_binout.cpp'),
         os.path.join(dynareadout_dir, 'src', 'python', 'pybind11_d3plot.cpp'),
+        os.path.join(dynareadout_dir, 'src', 'python', 'pybind11_key.cpp'),
         os.path.join(dynareadout_dir, 'src', 'python', 'pybind11_module.cpp'),
     ])
 
 setup(name='dynareadout',
-      version='23.01.1',
+      version='23.02',
       ext_modules=[dynareadout_c],
       zip_safe=False,
       include_package_data=True)

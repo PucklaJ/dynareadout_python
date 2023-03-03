@@ -83,6 +83,28 @@ for i in range(len(node_coords)):
   print("Node Coords {}: ({:.2f}, {:.2f}, {:.2f})".format(i, node_coords[i][0], node_coords[i][1], node_coords[i][2]))
 ```
 
+### KeyFile
+
+```python
+from dynareadout import key_file_parse
+
+keywords = key_file_parse("simulation/input.k")
+
+# Parse all nodes
+node_keywords = keywords["NODE"]
+
+for i in range(len(node_keywords)):
+  for j in range(len(node_keywords[i])):
+    node = node_keywords[i][j]
+    node_data = node.parse_whole([8, 16, 16, 16])
+    nid = node_data[0]
+    x = node_data[1]
+    y = node_data[2]
+    z = node_data[3]
+
+    print(f"NODE {nid:d}: ({x:.3f}; {y:.3f}; {z:.3f})")
+```
+
 ## Other languages
 
 This library is also available for C and C++ this version can be found [here](https://github.com/PucklaJ/dynareadout).
