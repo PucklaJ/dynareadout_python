@@ -18,13 +18,13 @@ except RuntimeError as e:
   exit(1)
 
 # Print the children of the binout
-children = bin_file.get_children("/")
+children = bin_file.read("/")
 for (i, child) in enumerate(children):
   print("Child {}: {}".format(i, child))
 
 # Read some data. This read method can read variables with different types, but
 # there are also read methods for particular types
-node_ids = bin_file.read("/nodout/metadata/ids")
+node_ids = bin_file.read("nodout/ids")
 for (i, nid) in enumerate(node_ids):
   print("Node ID {}: {}".format(i, nid))
 
@@ -33,9 +33,9 @@ for (i, nid) in enumerate(node_ids):
 node_ids_type = bin_file.get_type_id("/nodout/metadata/ids")
 
 # Then read the data using the special read method.
-# The benefit of using those methods over the generalised read method
-# is that the data does not need to be converted to a python list, but
-# instead it can be accessed directly which is better for performance.
+# If you already know the exact type and path of a variable
+# these methods can be a bit more performant,
+# since the library does not need the get the type and path first.
 if node_ids_type == BinoutType.Int32:
   node_ids = bin_file.read_int32("/nodout/metadata/ids")
 elif node_ids_type == BinoutType.Int64:
@@ -46,6 +46,12 @@ else:
 
 for (i, nid) in enumerate(node_ids):
   print("Node ID {}: {}".format(i, nid))
+
+# If you want to read "timed" data (x_displacement, x_force, etc.) you can do so also with the read method
+x_displacement = bin_file.read("nodout/x_displacement")
+for (t, time_step) in enumerate(x_displacement):
+  for (n, x_disp) in enumerate(time_step):
+    print("X Displacement time_step={}, node_id={}: {}".format(t, node_ids[n], x_displacement[t][n]))
 ```
 
 ### D3plot
@@ -75,6 +81,28 @@ for (i, nid) in enumerate(node_ids):
 node_coords = plot_file.read_node_coordinates(10)
 for i in range(len(node_coords)):
   print("Node Coords {}: ({:.2f}, {:.2f}, {:.2f})".format(i, node_coords[i][0], node_coords[i][1], node_coords[i][2]))
+```
+
+### KeyFile
+
+```python
+from dynareadout import key_file_parse
+
+keywords = key_file_parse("simulation/input.k")
+
+# Parse all nodes
+node_keywords = keywords["NODE"]
+
+for i in range(len(node_keywords)):
+  for j in range(len(node_keywords[i])):
+    node = node_keywords[i][j]
+    node_data = node.parse_whole([8, 16, 16, 16])
+    nid = node_data[0]
+    x = node_data[1]
+    y = node_data[2]
+    z = node_data[3]
+
+    print(f"NODE {nid:d}: ({x:.3f}; {y:.3f}; {z:.3f})")
 ```
 
 ## Other languages
