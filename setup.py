@@ -50,7 +50,7 @@ dynareadout_c = Extension(
     ])
 
 setup(name='dynareadout',
-      version='23.02',
+      version='23.04',
       ext_modules=[dynareadout_c],
       zip_safe=False,
       include_package_data=True)
