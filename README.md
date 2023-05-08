@@ -2,6 +2,10 @@
 
 An Ansi C library for parsing binary output files of LS Dyna (d3plot, binout) with bindings for python
 
+## Documentation
+
+You can find a [Wiki](https://github.com/PucklaJ/dynareadout/wiki) with API Documentation for python.
+
 ## Examples
 
 ### Binout
