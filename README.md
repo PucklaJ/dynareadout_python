@@ -1,6 +1,6 @@
 # dynareadout
 
-An Ansi C library for parsing binary output files of LS Dyna (d3plot, binout) with bindings for python
+High-Performance and Thread-Safe C/C++ library for parsing binary output files and key files of LS Dyna (d3plot, binout, input deck) with bindings for python.
 
 ## Documentation
 
