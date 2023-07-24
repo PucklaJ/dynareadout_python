@@ -11,12 +11,12 @@ You can find a [Wiki](https://github.com/PucklaJ/dynareadout/wiki) with API Docu
 ### Binout
 
 ```python
-from dynareadout import Binout, BinoutType
+from dynareadout import Binout
 
 bin_file = None
 try:
   # This library also supports opening multiple binout files at once by globing them
-  bin_file = Binout("simulation/binout*")
+  bin_file = Binout("path/to/your/binout*")
 except RuntimeError as e:
   print("Failed to open binout: {}".format(e))
   exit(1)
@@ -29,27 +29,16 @@ for (i, child) in enumerate(children):
 # Read some data. This read method can read variables with different types, but
 # there are also read methods for particular types
 node_ids = bin_file.read("nodout/ids")
-for (i, nid) in enumerate(node_ids):
-  print("Node ID {}: {}".format(i, nid))
+for i in range(len(node_ids)):
+  print("Node ID {}: {}".format(i, node_ids[i]))
 
-# You can also read this variable with the read method of the particular type
-# First find out what the type is
-node_ids_type = bin_file.get_type_id("/nodout/metadata/ids")
+# You can also find out if a variable exists
+node_ids_exist = bin_file.variable_exists("/nodout/metadata/ids")
 
-# Then read the data using the special read method.
-# If you already know the exact type and path of a variable
-# these methods can be a bit more performant,
-# since the library does not need the get the type and path first.
-if node_ids_type == BinoutType.Int32:
-  node_ids = bin_file.read_int32("/nodout/metadata/ids")
-elif node_ids_type == BinoutType.Int64:
-  node_ids = bin_file.read_int64("/nodout/metadata/ids")
-else:
-  print("The node ids are not 32-Bit or 64-Bit integers")
-  exit(1)
-
-for (i, nid) in enumerate(node_ids):
-  print("Node ID {}: {}".format(i, nid))
+# Get the number of time steps in the binout
+nodout_timesteps = bin_file.get_num_timesteps("/nodout")
+# The time steps can vary inside the binout
+rcforc_timesteps = bin_file.get_num_timesteps("/rcforc")
 
 # If you want to read "timed" data (x_displacement, x_force, etc.) you can do so also with the read method
 x_displacement = bin_file.read("nodout/x_displacement")
@@ -66,8 +55,8 @@ from dynareadout import D3plot
 plot_file = None
 try:
   # Just give it the first d3plot file and it opens all of them
-  plot_file = D3plot("simulation/d3plot")
-except e as RuntimeError:
+  plot_file = D3plot("path/to/your/d3plot")
+except RuntimeError as e:
   print("Failed to open: {}".format(e))
   exit(1)
 
@@ -92,19 +81,19 @@ for i in range(len(node_coords)):
 ```python
 from dynareadout import key_file_parse
 
-keywords = key_file_parse("simulation/input.k")
+keywords = key_file_parse("path/to/your/input.k")
 
 # Parse all nodes
 node_keywords = keywords["NODE"]
 
+# Loop over all *NODE keywords
 for i in range(len(node_keywords)):
+  # Loop over all cards of each *NODE keyword
   for j in range(len(node_keywords[i])):
     node = node_keywords[i][j]
-    node_data = node.parse_whole([8, 16, 16, 16])
-    nid = node_data[0]
-    x = node_data[1]
-    y = node_data[2]
-    z = node_data[3]
+    # Then you can parse the variables of each card as integers and floats
+    # The list of integers holds all the widths of each variable in the card in characters
+    nid, x, y, z = node.parse_whole([8, 16, 16, 16])
 
     print(f"NODE {nid:d}: ({x:.3f}; {y:.3f}; {z:.3f})")
 ```

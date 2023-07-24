@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dynareadout"
-version = "23.06"
+version = "23.07"
 authors = [
   { name = "PucklaJ", email = "jonaas.pucher000000@gmail.com"},
 ]
-description = "Ansi C library for parsing binary output files of LS Dyna (d3plot, binout) with bindings for python"
+description = "High-Performance and Thread-Safe library for parsing binary output files and key files of LS Dyna (d3plot, binout, input deck)"
 readme = "README.md"
 requires-python = ">=3.6"
 classifiers = [
@@ -19,9 +19,6 @@ classifiers = [
   "Operating System :: MacOS",
   "Operating System :: POSIX :: Linux",
   "Topic :: Scientific/Engineering",
-]
-dependencies = [
-  "lsst-utils"
 ]
 
 [project.urls]
