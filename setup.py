@@ -16,6 +16,7 @@ else:
     compile_args.append("-w")
     compile_args.append("-DTHREAD_SAFE")
     link_args.append("-lpthread")
+    link_args.append("-lstdc++fs")
 
 dynareadout = Extension(
     name='dynareadout',
