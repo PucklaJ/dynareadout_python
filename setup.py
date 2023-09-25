@@ -40,6 +40,7 @@ dynareadout = Extension(
         os.path.join(dynareadout_dir, 'src', 'd3plot_state.c'),
         os.path.join(dynareadout_dir, 'src', 'd3plot.c'),
         os.path.join(dynareadout_dir, 'src', 'extra_string.c'),
+        os.path.join(dynareadout_dir, 'src', 'include_transform.c'),
         os.path.join(dynareadout_dir, 'src', 'key.c'),
         os.path.join(dynareadout_dir, 'src', 'line.c'),
         os.path.join(dynareadout_dir, 'src', 'multi_file.c'),
@@ -51,6 +52,7 @@ dynareadout = Extension(
         os.path.join(dynareadout_dir, 'src', 'cpp', 'd3plot_part.cpp'),
         os.path.join(dynareadout_dir, 'src', 'cpp', 'd3plot_state.cpp'),
         os.path.join(dynareadout_dir, 'src', 'cpp', 'd3plot.cpp'),
+        os.path.join(dynareadout_dir, 'src', 'cpp', 'include_transform.cpp'),
         os.path.join(dynareadout_dir, 'src', 'cpp', 'key.cpp'),
         # C++ Source Files for pybind11 module
         os.path.join(dynareadout_dir, 'src', 'python', 'pybind11_binout.cpp'),
@@ -60,7 +62,7 @@ dynareadout = Extension(
     ])
 
 setup(name='dynareadout',
-      version='23.08',
+      version='23.09',
       ext_modules=[dynareadout],
       zip_safe=False,
       include_package_data=True)
