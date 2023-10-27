@@ -11,12 +11,10 @@ link_args = []
 if os.name == "nt":
     cpp_args.append("/std:c++17")
     cpp_args.append("/w")
-    cpp_args.append("/DTHREAD_SAFE")
     c_args.append("/w")
 else:
     cpp_args.append("-std=c++17")
     cpp_args.append("-w")
-    cpp_args.append("-DTHREAD_SAFE")
     c_args.append("-ansi")
     c_args.append("-w")
     link_args.append("-lpthread")
@@ -47,9 +45,6 @@ ext_libraries = [[
         ],
         'include_dirs': [
             os.path.join(dynareadout_dir, 'src'),
-        ],
-        'macros': [
-            ('THREAD_SAFE', '1'),
         ],
         'cflags': c_args,
     }
@@ -82,7 +77,7 @@ dynareadout = Extension(
 )
 
 setup(name='dynareadout',
-      version='23.09',
+      version='23.10',
       ext_modules=[dynareadout],
       zip_safe=False,
       include_package_data=True,
