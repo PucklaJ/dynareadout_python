@@ -41,6 +41,7 @@ ext_libraries = [[
             os.path.join(dynareadout_dir, 'src', 'multi_file.c'),
             os.path.join(dynareadout_dir, 'src', 'path_view.c'),
             os.path.join(dynareadout_dir, 'src', 'path.c'),
+            os.path.join(dynareadout_dir, 'src', 'string_builder.c'),
             os.path.join(dynareadout_dir, 'src', 'sync.c'),
         ],
         'include_dirs': [
@@ -77,7 +78,7 @@ dynareadout = Extension(
 )
 
 setup(name='dynareadout',
-      version='23.10.1',
+      version='23.10.2',
       ext_modules=[dynareadout],
       zip_safe=False,
       include_package_data=True,
