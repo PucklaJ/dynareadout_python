@@ -22,23 +22,22 @@ except RuntimeError as e:
   exit(1)
 
 # Print the children of the binout
-children = bin_file.read("/")
+children = bin_file.read()
 for (i, child) in enumerate(children):
   print("Child {}: {}".format(i, child))
 
-# Read some data. This read method can read variables with different types, but
-# there are also read methods for particular types
+# Read some data. This method can read variables of all different types
 node_ids = bin_file.read("nodout/ids")
 for i in range(len(node_ids)):
   print("Node ID {}: {}".format(i, node_ids[i]))
 
 # You can also find out if a variable exists
-node_ids_exist = bin_file.variable_exists("/nodout/metadata/ids")
+node_ids_exist = bin_file.variable_exists("nodout/ids")
 
 # Get the number of time steps in the binout
-nodout_timesteps = bin_file.get_num_timesteps("/nodout")
+nodout_timesteps = bin_file.get_num_timesteps("nodout")
 # The time steps can vary inside the binout
-rcforc_timesteps = bin_file.get_num_timesteps("/rcforc")
+rcforc_timesteps = bin_file.get_num_timesteps("rcforc")
 
 # If you want to read "timed" data (x_displacement, x_force, etc.) you can do so also with the read method
 x_displacement = bin_file.read("nodout/x_displacement")
