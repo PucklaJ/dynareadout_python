@@ -15,8 +15,8 @@ else
     DRO_OUTPUT=/wheelhouse ./build.sh
 fi
 
-for whl in /wheelhouse/*.whl: do
-    if [ ! auditwheel show $whl ]; then
+for whl in /wheelhouse/*.whl; do
+    if ! auditwheel show "$whl"; then
         echo "Skipping non-platform wheel $whl"
     else
         auditwheel repair $whl --plat $PLAT -w /io
