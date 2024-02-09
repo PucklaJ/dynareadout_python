@@ -18,10 +18,9 @@ fi
 for whl in /wheelhouse/*.whl; do
     if ! auditwheel show "$whl"; then
         echo "Skipping non-platform wheel $whl"
+        cp $whl /io/
     else
         auditwheel repair $whl --plat $PLAT -w /io
     fi
 done
-
-cp /wheelhouse/* /io/
 
