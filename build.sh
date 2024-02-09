@@ -15,5 +15,5 @@ rm -rf $script_dir/build $script_dir/dist $script_dir/*.egg-info
 $DRO_PIP wheel $script_dir --no-deps -w $DRO_OUTPUT
 rm -rf $script_dir/build $script_dir/*.egg-info
 
-echo Successfully build wheel for dynareadout "($DRO_PIP)"
+echo Successfully built wheel for dynareadout "($DRO_PIP)"
 
