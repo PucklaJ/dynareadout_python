@@ -3,6 +3,7 @@
 !.gitmodules
 dist/
 build/
+wheelhouse/
 *.egg-info
 *.o
 *.so

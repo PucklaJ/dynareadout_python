@@ -13,3 +13,11 @@ else
     DRO_OUTPUT=/io ./build.sh
 fi
 
+for whl in /io/*.whl: do
+    if ! auditwheel show $whl; then
+        echo "Skipping non-platform wheel $whl"
+    else
+        auditwheel repair $whl --plat $PLAT -w /io
+    fi
+done
+
