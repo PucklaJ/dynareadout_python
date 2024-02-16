@@ -1,6 +1,9 @@
 name: Build Wheels
 on: [push]
 
+env:
+  PLAT: manylinux2014_x86_64
+
 jobs:
   linux-x86_64-cp311:
     runs-on: ubuntu-latest
