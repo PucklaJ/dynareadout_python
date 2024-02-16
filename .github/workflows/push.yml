@@ -1,8 +1,5 @@
 name: Build and test wheels
-on:
-  push:
-    tags-ignore:
-      - '*'
+on: [push]
 
 jobs:
   build-linux-wheels:
