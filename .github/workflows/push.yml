@@ -6,6 +6,23 @@ env:
   TAG: 2024-02-08-a1b4ddc
 
 jobs:
+  source-distribution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python setup.py sdist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-distribution
+          path: ${{ github.workspace }}/dist/*.tar.gz
+          if-no-files-found: error
+          overwrite: true
+          compression-level: 0
   linux-x86_64:
     name: linux-x86_64-${{ matrix.abi }}
     runs-on: ubuntu-latest
