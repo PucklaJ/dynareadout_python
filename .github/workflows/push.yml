@@ -1,0 +1,107 @@
+name: Build and test wheels
+on:
+  push:
+    tags-ignore:
+      - '*'
+
+jobs:
+  build-linux-wheels:
+    name: linux-${{ matrix.arch }}-${{ matrix.abi }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64]
+        abi: [cp311-cp311]
+    env:
+      PLAT: manylinux2014_${{ matrix.arch }}
+      TAG: latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: quay.io/pypa/${{ env.PLAT }}:${{ env.TAG }}
+          options: -v ${{ github.workspace }}:/artifacts -v ${{ github.workspace }}:/work -e DRO_PIP=/opt/python/${{ matrix.abi }}/bin/pip -e DRO_SINGLE=1 -e PLAT=${{ env.PLAT }}
+          run: /work/build-manylinux.sh
+      - name: List Artifacts
+        run: ls -la --color=always ${{ github.workspace }}/*.${{ env.PLAT }}.whl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.arch }}-${{ matrix.abi }}-wheel
+          path: ${{ github.workspace }}/*.${{ env.PLAT }}.whl
+          if-no-files-found: error
+          overwrite: true
+          compression-level: 0
+  build-windows-wheels:
+    name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows]
+        arch: [x64]
+        pyver: ['3.11']
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyver }}
+      - run: pip install build
+      - run: python -m build --wheel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
+          path: ${{ github.workspace }}/dist/*.whl
+          if-no-files-found: error
+          overwrite: true
+          compression-level: 0
+
+
+  test-packages-windows:
+    runs-on: windows-latest
+    needs: [build-windows-wheels]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64]
+        pyver: ['3.11']
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyver }}
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          name: windows-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
+      - run: pip install (Get-ChildItem -Filter *.whl).FullName
+      - run: python test.py
+  test-packages-linux:
+    runs-on: ubuntu-latest
+    needs: [build-linux-wheels]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64]
+        pyver: ['3.11']
+    env:
+      abi: 'cp311-cp311'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyver }}
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          name: linux-${{ matrix.arch }}-${{ env.abi }}-wheel
+      - run: pip install *.whl
+      - run: python test.py
