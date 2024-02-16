@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DRO_PIP: /opt/python/cp311-cp311/bin/pip
-      DRO_SINGLE: 1
     steps:
       - uses: actions/checkout@v4
+        submodule: recursive
       - uses: addnab/docker-run-action@v3
         with:
           image: quay.io/pypa/${{ env.PLAT }}:${{ env.TAG }}
-          options: -v artifacts:/artifacts -v ${{ github.workspace }}:/work
+          options: -v artifacts:/artifacts -v ${{ github.workspace }}:/work -e DRO_PIP=${{ env.DRO_PIP }} -e DRO_SINGLE=1
           run: /work/build-manylinux.sh
       - uses: actions/upload-artifact@v4
         with:
