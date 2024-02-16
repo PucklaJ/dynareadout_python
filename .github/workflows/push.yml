@@ -4,9 +4,6 @@ on: [push]
 env:
   PLAT: manylinux2014_x86_64
   TAG: 2024-02-08-a1b4ddc
-options:
-  matrix:
-    fail-fast: false
 
 jobs:
   source-distribution:
@@ -30,6 +27,7 @@ jobs:
     name: linux-x86_64-${{ matrix.abi }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         abi: [cp310-cp310, cp312-cp312, cp37-cp37m, cp39-cp39, pp37-pypy37_pp73, pp39-pypy39_pp73, cp311-cp311, cp36-cp36m, cp38-cp38, pp310-pypy310_pp73, pp38-pypy38_pp73]
 
@@ -54,6 +52,7 @@ jobs:
     name: ${{ matrix.os }}-x64-python${{ matrix.pyver }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
+      fail-fast: false
       matrix:
         os: [windows]
         pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
@@ -77,6 +76,7 @@ jobs:
     name: ${{ matrix.os }}-x86_64-python${{ matrix.pyver }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
+      fail-fast: false
       matrix:
         os: [macos]
         pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
