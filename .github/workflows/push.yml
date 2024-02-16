@@ -3,23 +3,27 @@ on: [push]
 
 env:
   PLAT: manylinux2014_x86_64
+  TAG: 2024-02-08-a1b4ddc
 
 jobs:
   linux-x86_64-cp311:
     runs-on: ubuntu-latest
-    container:
-      image: quay.io/pypa/manylinux2014_x86_64
     env:
       DRO_PIP: /opt/python/cp311-cp311/bin/pip
+      DRO_OUTPUT: artifacts
       DRO_SINGLE: 1
     steps:
-      - name: Clone Repository
-        run: git clone --recursive --depth 1 --branch master https://github.com/PucklaJ/dynareadout_python.git repo
-      - run: cd repo && ./build-manylinux.sh
+      - uses: actions/checkout@v4
+      - uses: addnab/docker-run-action@v3
+        with:
+          registry: quay.io
+          image: ${{ env.PLAT }}:${{ env.TAG }}
+          options: -v ${{ env.DRO_OUTPUT }}:/artifacts -v ./build-manylinux.sh:/build-manylinux.sh -e DRO_PIP=${{ env.DRO_PIP }} -e DRO_SINGLE=1 -e PLAT=${{ env.PLAT }}
+          run: /build-manylinux.sh
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x86_64-cp311-wheel
-          path: /artifacts/*.whl
+          path: artifacts/*.whl
           if-no-files-found: error
           overwrite: true
 
