@@ -16,7 +16,7 @@ jobs:
       - uses: addnab/docker-run-action@v3
         with:
           image: quay.io/pypa/${{ env.PLAT }}:${{ env.TAG }}
-          options: -v artifacts:/artifacts -v build-manylinux.sh:/build-manylinux.sh
+          options: -v artifacts:/artifacts -v ./build-manylinux.sh:/build-manylinux.sh
           run: /build-manylinux.sh
       - uses: actions/upload-artifact@v4
         with:
