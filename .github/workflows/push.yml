@@ -20,14 +20,14 @@ jobs:
       - uses: addnab/docker-run-action@v3
         with:
           image: quay.io/pypa/${{ env.PLAT }}:${{ env.TAG }}
-          options: -v ${{ github.workspace }}/artifacts:/artifacts -v ${{ github.workspace }}:/work -e DRO_PIP=/opt/python/${{ matrix.abi }}/bin/pip -e DRO_SINGLE=1 -e PLAT=${{ env.PLAT }}
+          options: -v ${{ github.workspace }}:/artifacts -v ${{ github.workspace }}:/work -e DRO_PIP=/opt/python/${{ matrix.abi }}/bin/pip -e DRO_SINGLE=1 -e PLAT=${{ env.PLAT }}
           run: /work/build-manylinux.sh
       - name: List Artifacts
-        run: ls -la --color=always ${{ github.workspace }}/artifacts
+        run: ls -la --color=always ${{ github.workspace }}/*.${{ env.PLAT }}.whl
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x86_64-${{ matrix.abi }}-wheel
-          path: ${{ github.workspace }}/artifacts/*.whl
+          path: ${{ github.workspace }}/*.${{ env.PLAT }}.whl
           if-no-files-found: error
           overwrite: true
 
