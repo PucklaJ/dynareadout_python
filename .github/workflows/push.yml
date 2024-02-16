@@ -16,7 +16,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x86_64-cp311-wheel
-          path: /wheelhouse/*.whl
+          path: /artifacts/*.whl
           if-no-files-found: error
           overwrite: true
 
