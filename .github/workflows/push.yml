@@ -4,6 +4,9 @@ on: [push]
 env:
   PLAT: manylinux2014_x86_64
   TAG: 2024-02-08-a1b4ddc
+options:
+  matrix:
+    fail-fast: false
 
 jobs:
   source-distribution:
@@ -47,12 +50,35 @@ jobs:
           path: ${{ github.workspace }}/*.${{ env.PLAT }}.whl
           if-no-files-found: error
           overwrite: true
-  windows-macos-x64:
+  windows-x64:
+    name: ${{ matrix.os }}-x64-python${{ matrix.pyver }}
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [windows]
+        pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyver }}
+      - run: pip install build
+      - run: python -m build --wheel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-x64-python${{ matrix.pyver }}-wheel
+          path: ${{ github.workspace }}/dist/*.whl
+          if-no-files-found: error
+          overwrite: true
+  macos-x86_64:
     name: ${{ matrix.os }}-x86_64-python${{ matrix.pyver }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: [windows, macos]
+        os: [macos]
         pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
 
     steps:
