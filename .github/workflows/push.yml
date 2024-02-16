@@ -30,4 +30,23 @@ jobs:
           path: ${{ github.workspace }}/*.${{ env.PLAT }}.whl
           if-no-files-found: error
           overwrite: true
+  windows-x64:
+    name: windows-x64-python${{ matrix.pyver }}
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        pyver: ['3.11']
 
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyver }}
+      - run: pip install build
+      - run: python -m build --wheel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64-python${{ matrix.pyver }}-wheel
+          path: ${{ github.workspace }}/dist/*.whl
+          if-no-files-found: error
+          overwrite: true
