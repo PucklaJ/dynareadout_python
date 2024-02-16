@@ -1,9 +1,6 @@
 name: Build Wheels
 on: [push]
 
-env:
-  PLAT: manylinux2014_x86_64
-  TAG: 2024-02-08-a1b4ddc
 
 jobs:
   source-distribution:
@@ -23,13 +20,17 @@ jobs:
           if-no-files-found: error
           overwrite: true
           compression-level: 0
-  linux-x86_64:
-    name: linux-x86_64-${{ matrix.abi }}
+  linux:
+    name: linux-${{ matrix.arch }}-${{ matrix.abi }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        arch: [x86_64]
         abi: [cp310-cp310, cp312-cp312, cp37-cp37m, cp39-cp39, pp37-pypy37_pp73, pp39-pypy39_pp73, cp311-cp311, cp36-cp36m, cp38-cp38, pp310-pypy310_pp73, pp38-pypy38_pp73]
+    env:
+      PLAT: manylinux2014_${{ matrix.arch }}
+      TAG: latest
 
     steps:
       - uses: actions/checkout@v4
@@ -44,17 +45,18 @@ jobs:
         run: ls -la --color=always ${{ github.workspace }}/*.${{ env.PLAT }}.whl
       - uses: actions/upload-artifact@v4
         with:
-          name: linux-x86_64-${{ matrix.abi }}-wheel
+          name: linux-${{ matrix.arch }}-${{ matrix.abi }}-wheel
           path: ${{ github.workspace }}/*.${{ env.PLAT }}.whl
           if-no-files-found: error
           overwrite: true
-  windows-x64:
-    name: ${{ matrix.os }}-x64-python${{ matrix.pyver }}
+  windows:
+    name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
         os: [windows]
+        arch: [x64]
         pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
 
     steps:
@@ -68,31 +70,7 @@ jobs:
       - run: python -m build --wheel
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}-x64-python${{ matrix.pyver }}-wheel
-          path: ${{ github.workspace }}/dist/*.whl
-          if-no-files-found: error
-          overwrite: true
-  macos-x86_64:
-    name: ${{ matrix.os }}-x86_64-python${{ matrix.pyver }}
-    runs-on: ${{ matrix.os }}-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos]
-        pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.pyver }}
-      - run: pip install build
-      - run: python -m build --wheel
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}-x86_64-python${{ matrix.pyver }}-wheel
+          name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
           path: ${{ github.workspace }}/dist/*.whl
           if-no-files-found: error
           overwrite: true
