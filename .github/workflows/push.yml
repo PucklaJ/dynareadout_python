@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodule: recursive
+          submodules: recursive
       - uses: addnab/docker-run-action@v3
         with:
           image: quay.io/pypa/${{ env.PLAT }}:${{ env.TAG }}
