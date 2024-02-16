@@ -19,6 +19,8 @@ jobs:
           image: quay.io/pypa/${{ env.PLAT }}:${{ env.TAG }}
           options: -v artifacts:/artifacts -v ${{ github.workspace }}:/work -e DRO_PIP=${{ env.DRO_PIP }} -e DRO_SINGLE=1 -e PLAT=${{ env.PLAT }}
           run: /work/build-manylinux.sh
+      - name: List Artifacts
+        run: ls -la --color=always artifacts
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x86_64-cp311-wheel
