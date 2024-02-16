@@ -47,11 +47,12 @@ jobs:
           path: ${{ github.workspace }}/*.${{ env.PLAT }}.whl
           if-no-files-found: error
           overwrite: true
-  windows-x64:
-    name: windows-x64-python${{ matrix.pyver }}
-    runs-on: windows-latest
+  windows-macos-x64:
+    name: ${{ matrix.os }}-x86_64-python${{ matrix.pyver }}
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
+        os: [windows, macos]
         pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
 
     steps:
@@ -65,7 +66,7 @@ jobs:
       - run: python -m build --wheel
       - uses: actions/upload-artifact@v4
         with:
-          name: windows-x64-python${{ matrix.pyver }}-wheel
+          name: ${{ matrix.os }}-x86_64-python${{ matrix.pyver }}-wheel
           path: ${{ github.workspace }}/dist/*.whl
           if-no-files-found: error
           overwrite: true
