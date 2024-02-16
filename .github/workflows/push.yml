@@ -8,10 +8,11 @@ jobs:
       image: quay.io/pypa/manylinux2014_x86_64
     env:
       DRO_PIP: /opt/python/cp311-cp311/bin/pip
-      DRO_OUTPUT: wheelhouse/
       DRO_SINGLE: 1
     steps:
-      - run: ./build-manylinux.sh
+      - name: Clone Repository
+        run: git clone --recursive --depth 1 --branch ${{ env.GITHUB_SHA }} ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }} repo
+      - run: cd repo && ./build-manylinux.sh
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x86_64-cp311-wheel
