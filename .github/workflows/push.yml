@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: addnab/docker-run-action@v3
         with:
-          registry: quay.io
+          registry: quay.io/pypa
           image: ${{ env.PLAT }}:${{ env.TAG }}
           options: -v ${{ env.DRO_OUTPUT }}:/artifacts -v ./build-manylinux.sh:/build-manylinux.sh -e DRO_PIP=${{ env.DRO_PIP }} -e DRO_SINGLE=1 -e PLAT=${{ env.PLAT }}
           run: /build-manylinux.sh
