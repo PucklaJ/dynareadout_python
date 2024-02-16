@@ -48,6 +48,7 @@ jobs:
           path: ${{ github.workspace }}/*.${{ env.PLAT }}.whl
           if-no-files-found: error
           overwrite: true
+          compression-level: 0
   windows:
     name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}
     runs-on: ${{ matrix.os }}-latest
@@ -73,6 +74,7 @@ jobs:
           path: ${{ github.workspace }}/dist/*.whl
           if-no-files-found: error
           overwrite: true
+          compression-level: 0
 
 
   publish-to-test-pypi:
@@ -92,5 +94,5 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
-        run: python -m twine --repository-url https://test.pypi.org/legacy/ *.whl *.tar.gz
+        run: python -m twine upload --repository-url https://test.pypi.org/legacy/ *
 
