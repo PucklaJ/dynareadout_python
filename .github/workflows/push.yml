@@ -12,7 +12,8 @@ jobs:
       DRO_PIP: /opt/python/cp311-cp311/bin/pip
     steps:
       - uses: actions/checkout@v4
-        submodule: recursive
+        with:
+          submodule: recursive
       - uses: addnab/docker-run-action@v3
         with:
           image: quay.io/pypa/${{ env.PLAT }}:${{ env.TAG }}
