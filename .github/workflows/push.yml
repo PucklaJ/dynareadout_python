@@ -75,19 +75,19 @@ jobs:
         with:
           submodules: recursive
       - name: Install Boost
-        run: |
-          brew install boost
-          brew link --force boost
+        run: brew install boost
       - uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_BUILD: ${{ env.abi }}
           CIBW_ARCHS: ${{ matrix.arch }}
         with:
-          output-dir: ${{ github.workspace }}/../wheelhouse
+          output-dir: ${{ github.workspace }}
+      - name: List Artifacts
+        run: ls -la --color=always ${{ github.workspace }}/*.whl
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
-          path: ${{ github.workspace }}/../wheelhouse/*.whl
+          path: ${{ github.workspace }}/*.whl
           if-no-files-found: error
           overwrite: true
           compression-level: 0
