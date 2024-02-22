@@ -58,6 +58,35 @@ jobs:
           if-no-files-found: error
           overwrite: true
           compression-level: 0
+  build-macos-wheels:
+    name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos]
+        arch: [x86_64]
+        pyver: ['3.11']
+    env:
+      abi: ${{ matrix.pyver == '3.11' && 'cp311-*' || matrix.pyver }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: pypa/cibuildwheel@v2.16.2
+        env:
+          CIBW_BUILD: ${{ env.abi }}
+          CIBW_ARCHS: ${{ matrix.arch }}
+        with:
+          output-dir: wheelhouse
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
+          path: ${{ github.workspace }}/wheelhouse/*.whl
+          if-no-files-found: error
+          overwrite: true
+          compression-level: 0
 
 
   test-packages-windows:
@@ -100,5 +129,25 @@ jobs:
         with:
           merge-multiple: true
           name: linux-${{ matrix.arch }}-${{ env.abi }}-wheel
+      - run: pip install *.whl
+      - run: python test.py
+  test-packages-macos:
+    runs-on: macos-latest
+    needs: [build-macos-wheels]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64]
+        pyver: ['3.11']
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyver }}
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          name: macos-${{ matrix.arch }}-${{ matrix.pyver }}-wheel
       - run: pip install *.whl
       - run: python test.py
