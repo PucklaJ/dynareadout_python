@@ -1,4 +1,5 @@
 import os
+import platform
 from setuptools import setup
 from setuptools.extension import Extension
 
@@ -8,7 +9,7 @@ dynareadout_dir = os.path.join('lib', 'dynareadout')
 c_args = []
 cpp_args = []
 link_args = []
-if os.name == "nt":
+if platform.system() == "Windows":
     cpp_args.append("/std:c++17")
     cpp_args.append("/w")
     c_args.append("/w")
@@ -18,7 +19,8 @@ else:
     c_args.append("-ansi")
     c_args.append("-w")
     link_args.append("-lpthread")
-    link_args.append("-lstdc++fs")
+    if platform.system() == "Linux":
+        link_args.append("-lstdc++fs")
 
 ext_libraries = [[
     'dynareadout_c', {
@@ -78,7 +80,7 @@ dynareadout = Extension(
 )
 
 setup(name='dynareadout',
-      version='24.01.1',
+      version='24.01.6',
       ext_modules=[dynareadout],
       zip_safe=False,
       include_package_data=True,
