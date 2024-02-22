@@ -152,6 +152,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          name: macos-${{ matrix.arch }}-${{ matrix.pyver }}-wheel
+          name: macos-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
       - run: pip install *.whl
       - run: python test.py
