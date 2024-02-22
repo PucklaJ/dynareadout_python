@@ -76,7 +76,7 @@ jobs:
           submodules: recursive
       - name: Install Boost
         run: brew install boost
-      - uses: pypa/cibuildwheel@v2.16.2
+      - uses: pypa/cibuildwheel@v2.16.5
         env:
           CIBW_BUILD: ${{ env.abi }}
           CIBW_ARCHS: ${{ matrix.arch }}
