@@ -79,11 +79,11 @@ jobs:
           CIBW_BUILD: ${{ env.abi }}
           CIBW_ARCHS: ${{ matrix.arch }}
         with:
-          output-dir: wheelhouse
+          output-dir: ${{ github.workspace }}/../wheelhouse
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
-          path: ${{ github.workspace }}/wheelhouse/*.whl
+          path: ${{ github.workspace }}/../wheelhouse/*.whl
           if-no-files-found: error
           overwrite: true
           compression-level: 0
