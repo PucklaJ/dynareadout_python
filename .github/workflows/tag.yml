@@ -194,7 +194,7 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: python -m twine upload --repository-url https://pypi.org/legacy/ *
+        run: python -m twine upload *
 
   create-release:
     runs-on: ubuntu-latest
