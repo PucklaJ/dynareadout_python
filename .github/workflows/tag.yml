@@ -22,126 +22,52 @@ jobs:
           if-no-files-found: error
           overwrite: true
           compression-level: 0
-  build-linux-wheels:
-    name: linux-${{ matrix.arch }}-${{ matrix.abi }}
-    runs-on: ubuntu-latest
+  build-wheels:
+    name: ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
+        os: [linux, windows, macos]
         arch: [x86_64]
-        abi: [cp310-cp310, cp312-cp312, cp37-cp37m, cp39-cp39, pp37-pypy37_pp73, pp39-pypy39_pp73, cp311-cp311, cp36-cp36m, cp38-cp38, pp310-pypy310_pp73, pp38-pypy38_pp73]
     env:
-      PLAT: manylinux2014_${{ matrix.arch }}
-      TAG: latest
+      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos' && 'macosx' || 'manylinux' }}
+      arch: ${{ matrix.os == 'windows' && matrix.arch == 'x86_64' && 'amd64' || matrix.arch || matrix.arch}}
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: addnab/docker-run-action@v3
-        with:
-          image: quay.io/pypa/${{ env.PLAT }}:${{ env.TAG }}
-          options: -v ${{ github.workspace }}:/artifacts -v ${{ github.workspace }}:/work -e DRO_PIP=/opt/python/${{ matrix.abi }}/bin/pip -e DRO_SINGLE=1 -e PLAT=${{ env.PLAT }}
-          run: /work/build-manylinux.sh
-      - name: List Artifacts
-        run: ls -la --color=always ${{ github.workspace }}/*.${{ env.PLAT }}.whl
-      - uses: actions/upload-artifact@v4
-        with:
-          name: linux-${{ matrix.arch }}-${{ matrix.abi }}-wheel
-          path: ${{ github.workspace }}/*.${{ env.PLAT }}.whl
-          if-no-files-found: error
-          overwrite: true
-          compression-level: 0
-  build-windows-wheels:
-    name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}
-    runs-on: ${{ matrix.os }}-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows]
-        arch: [x64]
-        pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.pyver }}
-      - run: pip install build
-      - run: python -m build --wheel
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
-          path: ${{ github.workspace }}/dist/*.whl
-          if-no-files-found: error
-          overwrite: true
-          compression-level: 0
-  build-macos-wheels:
-    name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}
-    runs-on: ${{ matrix.os }}-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos]
-        arch: [x86_64]
-        pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
-    env:
-      abi: ${{ matrix.pyver == '3.12' && 'cp312-*' || (matrix.pyver == '3.11' && 'cp311-*' || (matrix.pyver == '3.10' && 'cp310-*' || (matrix.pyver == '3.9' && 'cp39-*' || (matrix.pyver == '3.8' && 'cp38-*' || (matrix.pyver == '3.7' && 'cp37-*' || (matrix.pyver == '3.6' && 'cp36-*' || 'invalid')))))) }}
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: Install Boost
-        run: brew install boost
-      - uses: pypa/cibuildwheel@v2.16.5
+      - uses: pypa/cibuildwheel@v2.17.0
         env:
-          CIBW_BUILD: ${{ env.abi }}
-          CIBW_ARCHS: ${{ matrix.arch }}
+          CIBW_BUILD: *-${{ env.plat }}_${{ env.arch }}
         with:
           output-dir: ${{ github.workspace }}
       - name: List Artifacts
+        if: matrix.os != 'windows'
         run: ls -la --color=always ${{ github.workspace }}/*.whl
+      - name: List Artifacts Windows
+        if: matrix.os == 'windows'
+        run: dir ${{ github.workspace }}
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
+          name: ${{ matrix.os }}-${{ matrix.atch }}-wheels
           path: ${{ github.workspace }}/*.whl
           if-no-files-found: error
           overwrite: true
           compression-level: 0
 
-
-  test-packages-windows:
-    runs-on: windows-latest
-    needs: [build-windows-wheels]
+  test-packages:
+    name: Test ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        arch: [x64]
-        pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.pyver }}
-      - uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
-          name: windows-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
-      - run: pip install (Get-ChildItem -Filter *.whl).FullName
-      - run: python test.py
-  test-packages-linux:
-    runs-on: ubuntu-latest
-    needs: [build-linux-wheels]
-    strategy:
-      fail-fast: false
-      matrix:
+        os: [linux, windows, macos]
         arch: [x86_64]
-        pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7']
+        pyver: ['3.11']
     env:
+      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos' && 'macosx' || 'manylinux' }}
       abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
 
     steps:
@@ -152,32 +78,37 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          name: linux-${{ matrix.arch }}-${{ env.abi }}-wheel
-      - run: pip install *.whl
+          name: ${{ matrix.os }}-${{ matrix.arch }}-wheels
+      - name: Install Wheel Windows
+        if: matrix.os == 'windows'
+        run: pip install (Get-ChildItem -Filter *-${{ env.abi }}-${{ env.plat }}*.whl).FullName
+      - name: Install Wheel
+        if: matrix.os != 'windows'
+        run: pip install *-${{ env.abi }}-${{ env.plat }}*.whl
       - run: python test.py
-  test-packages-macos:
-    runs-on: macos-latest
-    needs: [build-macos-wheels]
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [x86_64]
-        pyver: ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '3.6']
 
+  publish-to-test-pypi:
+    if: endsWith(github.ref, 'test')
+    runs-on: ubuntu-latest
+    needs: [test-packages]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.pyver }}
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          name: macos-${{ matrix.arch }}-python${{ matrix.pyver }}-wheel
-      - run: pip install *.whl
-      - run: python test.py
-
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install twine
+      - name: List All Artifacts
+        run: ls -la --color=always
+      - name: Upload to test.pypi.org
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+        run: python -m twine upload --repository-url https://test.pypi.org/legacy/ *
 
   publish-to-pypi:
+    if: !endsWith(github.ref, 'test')
     runs-on: ubuntu-latest
     needs: [test-packages-windows, test-packages-linux, test-packages-macos, source-distribution]
     steps:
@@ -195,6 +126,27 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: python -m twine upload *
+
+  create-release-test:
+    runs-on: ubuntu-latest
+    needs: [publish-to-test-pypi]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: artifacts
+      - name: List all Artifacts
+        run: ls -la --color=always artifacts
+      - uses: ncipoll/release-action@v1
+        with:
+          artifacts: 'artifacts/*'
+          body: |
+            Test Release generated by Github Actions
+          generateReleaseNotes: true
+          makeLatest: false
+          draft: true
+          prerelease: true
 
   create-release:
     runs-on: ubuntu-latest
