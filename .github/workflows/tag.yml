@@ -40,7 +40,7 @@ jobs:
           submodules: recursive
       - uses: pypa/cibuildwheel@v2.17.0
         env:
-          CIBW_BUILD: *-${{ env.plat }}_${{ env.arch }}
+          CIBW_BUILD: "*-${{ env.plat }}_${{ env.arch }}"
         with:
           output-dir: ${{ github.workspace }}
       - name: List Artifacts
@@ -81,10 +81,10 @@ jobs:
           name: ${{ matrix.os }}-${{ matrix.arch }}-wheels
       - name: Install Wheel Windows
         if: matrix.os == 'windows'
-        run: pip install (Get-ChildItem -Filter *-${{ env.abi }}-${{ env.plat }}*.whl).FullName
+        run: pip install (Get-ChildItem -Filter "*-${{ env.abi }}-${{ env.plat }}*.whl").FullName
       - name: Install Wheel
         if: matrix.os != 'windows'
-        run: pip install *-${{ env.abi }}-${{ env.plat }}*.whl
+        run: pip install "*-${{ env.abi }}-${{ env.plat }}*.whl"
       - run: python test.py
 
   publish-to-test-pypi:
@@ -108,7 +108,7 @@ jobs:
         run: python -m twine upload --repository-url https://test.pypi.org/legacy/ *
 
   publish-to-pypi:
-    if: !endsWith(github.ref, 'test')
+    if: endsWith(github.ref, 'test') != true
     runs-on: ubuntu-latest
     needs: [test-packages-windows, test-packages-linux, test-packages-macos, source-distribution]
     steps:
