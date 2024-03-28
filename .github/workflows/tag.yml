@@ -38,9 +38,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: pypa/cibuildwheel@v2.17.0
+      - name: Install Boost
+        if: matrix.os == 'macos'
+        run: brew install boost
+      - name: CI Buildwheel
+        if: endsWith(github.ref, 'test') != true
+        uses: pypa/cibuildwheel@v2.17.0
         env:
           CIBW_BUILD: "*-${{ env.plat }}_${{ env.arch }}"
+        with:
+          output-dir: ${{ github.workspace }}
+      - name: CI Buildwheel Test
+        if: endsWith(github.ref, 'test')
+        uses: pypa/cibuildwheel@v2.17.0
+        env:
+          CIBW_BUILD: "{cp37,cp312}-${{ env.plat }}_${{ env.arch }}"
         with:
           output-dir: ${{ github.workspace }}
       - name: List Artifacts
@@ -51,21 +63,23 @@ jobs:
         run: dir ${{ github.workspace }}
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}-${{ matrix.atch }}-wheels
+          name: ${{ matrix.os }}-${{ matrix.arch }}-wheels
           path: ${{ github.workspace }}/*.whl
           if-no-files-found: error
           overwrite: true
           compression-level: 0
 
   test-packages:
-    name: Test ${{ matrix.os }}-${{ matrix.arch }}
+    if: endsWith(github.ref, 'test') != true
+    name: Test ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.pyver }}
     runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-latest
+    needs: build-wheels
     strategy:
       fail-fast: false
       matrix:
         os: [linux, windows, macos]
         arch: [x86_64]
-        pyver: ['3.11']
+        pyver: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
     env:
       plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos' && 'macosx' || 'manylinux' }}
       abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
@@ -79,18 +93,66 @@ jobs:
         with:
           merge-multiple: true
           name: ${{ matrix.os }}-${{ matrix.arch }}-wheels
+      - name: List Artifacts Windows
+        if: matrix.os == 'windows'
+        run: dir ${{ github.workspace }}
+      - name: List Artifacts
+        if: matrix.os != 'windows'
+        run: ls -la --color=always *.whl
       - name: Install Wheel Windows
         if: matrix.os == 'windows'
         run: pip install (Get-ChildItem -Filter "*-${{ env.abi }}-${{ env.plat }}*.whl").FullName
       - name: Install Wheel
         if: matrix.os != 'windows'
-        run: pip install "*-${{ env.abi }}-${{ env.plat }}*.whl"
+        run: |
+          wheel_names=("*-${{ env.abi }}-${{ env.plat }}*.whl")
+          pip install $wheel_names
+      - run: python test.py
+
+  test-packages-test:
+    if: endsWith(github.ref, 'test')
+    name: Test Test ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.pyver }}
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-latest
+    needs: build-wheels
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [linux, windows, macos]
+        arch: [x86_64]
+        pyver: ['3.7', '3.12']
+    env:
+      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos' && 'macosx' || 'manylinux' }}
+      abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pyver }}
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          name: ${{ matrix.os }}-${{ matrix.arch }}-wheels
+      - name: List Artifacts Windows
+        if: matrix.os == 'windows'
+        run: dir ${{ github.workspace }}
+      - name: List Artifacts
+        if: matrix.os != 'windows'
+        run: ls -la --color=always *.whl
+      - name: Install Wheel Windows
+        if: matrix.os == 'windows'
+        run: pip install (Get-ChildItem -Filter "*-${{ env.abi }}-${{ env.plat }}*.whl").FullName
+      - name: Install Wheel
+        if: matrix.os != 'windows'
+        run: |
+          wheel_names=("*-${{ env.abi }}-${{ env.plat }}*.whl")
+          pip install $wheel_names
       - run: python test.py
 
   publish-to-test-pypi:
     if: endsWith(github.ref, 'test')
     runs-on: ubuntu-latest
-    needs: [test-packages]
+    needs: [test-packages-test, source-distribution]
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -110,7 +172,7 @@ jobs:
   publish-to-pypi:
     if: endsWith(github.ref, 'test') != true
     runs-on: ubuntu-latest
-    needs: [test-packages-windows, test-packages-linux, test-packages-macos, source-distribution]
+    needs: [test-packages, source-distribution]
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -131,14 +193,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [publish-to-test-pypi]
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
           path: artifacts
       - name: List all Artifacts
         run: ls -la --color=always artifacts
-      - uses: ncipoll/release-action@v1
+      - uses: ncipollo/release-action@v1
         with:
           artifacts: 'artifacts/*'
           body: |
@@ -152,7 +213,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [publish-to-pypi]
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
