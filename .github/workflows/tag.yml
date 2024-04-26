@@ -24,7 +24,7 @@ jobs:
           compression-level: 0
   build-wheels:
     name: ${{ matrix.os }}-${{ matrix.arch }}
-    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-latest
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-${{ matrix.os == 'macos' && '13' || 'latest' }}
     strategy:
       fail-fast: false
       matrix:
@@ -72,7 +72,7 @@ jobs:
   test-packages:
     if: endsWith(github.ref, 'test') != true
     name: Test ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.pyver }}
-    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-latest
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-${{ matrix.os == 'macos' && '13' || 'latest' }}
     needs: build-wheels
     strategy:
       fail-fast: false
@@ -112,7 +112,7 @@ jobs:
   test-packages-test:
     if: endsWith(github.ref, 'test')
     name: Test Test ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.pyver }}
-    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-latest
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-${{ matrix.os == 'macos' && '13' || 'latest' }}
     needs: build-wheels
     strategy:
       fail-fast: false
