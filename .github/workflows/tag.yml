@@ -24,7 +24,7 @@ jobs:
           compression-level: 0
   build-wheels:
     name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}
-    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' }}-${{ matrix.os == 'macos-x86_64' && '13' || matrix.os == 'macos-x86_64' && '14' || 'latest' }}
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-x86_64' && '13' || matrix.os == 'macos-x86_64' && '14' || 'latest' }}
     strategy:
       fail-fast: false
       matrix:
