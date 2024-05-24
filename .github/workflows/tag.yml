@@ -132,7 +132,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os = 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}-wheels
+          name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}-wheels
       - name: List Artifacts Windows
         if: matrix.os == 'windows'
         run: dir ${{ github.workspace }}
