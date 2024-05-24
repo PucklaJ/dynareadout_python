@@ -83,17 +83,17 @@ jobs:
     env:
       plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos-x86_64' && 'macosx' || matrix.os == 'macos-arm64' && 'macosx' || 'manylinux' }}
       abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
-      macos_works: ${{ matrix.pyver == '3.7' && matrix.os == 'macos-arm64' && false || true }}
+      macos_works: ${{ matrix.pyver == '3.7' && matrix.os == 'macos-arm64' && 'false' || 'true' }}
 
     steps:
       - uses: actions/checkout@v4
-        if: env.macos_works == true
+        if: env.macos_works == 'true'
       - uses: actions/setup-python@v5
-        if: env.macos_works == true
+        if: env.macos_works == 'true'
         with:
           python-version: ${{ matrix.pyver }}
       - uses: actions/download-artifact@v4
-        if: env.macos_works == true
+        if: env.macos_works == 'true'
         with:
           merge-multiple: true
           name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}-wheels
@@ -101,18 +101,18 @@ jobs:
         if: matrix.os == 'windows'
         run: dir ${{ github.workspace }}
       - name: List Artifacts
-        if: matrix.os != 'windows' && env.macos_works == true
+        if: matrix.os != 'windows' && env.macos_works == 'true'
         run: ls -la --color=always *.whl
       - name: Install Wheel Windows
         if: matrix.os == 'windows'
         run: pip install (Get-ChildItem -Filter "*-${{ env.abi }}-${{ env.plat }}*.whl").FullName
       - name: Install Wheel
-        if: matrix.os != 'windows' && env.macos_works == true
+        if: matrix.os != 'windows' && env.macos_works == 'true'
         run: |
           wheel_names=("*-${{ env.abi }}-${{ env.plat }}*.whl")
           pip install $wheel_names
       - run: python test.py
-        if: env.macos_works == true
+        if: env.macos_works == 'true'
 
   test-packages-test:
     if: endsWith(github.ref, 'test')
@@ -128,17 +128,17 @@ jobs:
     env:
       plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos-x86_64' && 'macosx' || matrix.os == 'macos-arm64' && 'macosx' || 'manylinux' }}
       abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
-      macos_works: ${{ matrix.pyver == '3.7' && matrix.os == 'macos-arm64' && false || true }}
+      macos_works: ${{ matrix.pyver == '3.7' && matrix.os == 'macos-arm64' && 'false' || 'true' }}
 
     steps:
       - uses: actions/checkout@v4
-        if: env.macos_works == true
+        if: env.macos_works == 'true'
       - uses: actions/setup-python@v5
-        if: env.macos_works == true
+        if: env.macos_works == 'true'
         with:
           python-version: ${{ matrix.pyver }}
       - uses: actions/download-artifact@v4
-        if: env.macos_works == true
+        if: env.macos_works == 'true'
         with:
           merge-multiple: true
           name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}-wheels
@@ -146,18 +146,18 @@ jobs:
         if: matrix.os == 'windows'
         run: dir ${{ github.workspace }}
       - name: List Artifacts
-        if: matrix.os != 'windows' && env.macos_works == true
+        if: matrix.os != 'windows' && env.macos_works == 'true'
         run: ls -la --color=always *.whl
       - name: Install Wheel Windows
         if: matrix.os == 'windows'
         run: pip install (Get-ChildItem -Filter "*-${{ env.abi }}-${{ env.plat }}*.whl").FullName
       - name: Install Wheel
-        if: matrix.os != 'windows' && env.macos_works == true
+        if: matrix.os != 'windows' && env.macos_works == 'true'
         run: |
           wheel_names=("*-${{ env.abi }}-${{ env.plat }}*.whl")
           pip install $wheel_names
       - run: python test.py
-        if: env.macos_works == true
+        if: env.macos_works == 'true'
 
   publish-to-test-pypi:
     if: endsWith(github.ref, 'test')
