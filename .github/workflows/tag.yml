@@ -23,23 +23,23 @@ jobs:
           overwrite: true
           compression-level: 0
   build-wheels:
-    name: ${{ matrix.os }}-${{ matrix.arch }}
-    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-${{ matrix.os == 'macos' && '13' || 'latest' }}
+    name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' }}-${{ matrix.os == 'macos-x86_64' && '13' || matrix.os == 'macos-x86_64' && '14' || 'latest' }}
     strategy:
       fail-fast: false
       matrix:
-        os: [linux, windows, macos]
+        os: [linux, windows, macos-x86_64, macos-arm64]
         arch: [x86_64]
     env:
-      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos' && 'macosx' || 'manylinux' }}
-      arch: ${{ matrix.os == 'windows' && matrix.arch == 'x86_64' && 'amd64' || matrix.arch || matrix.arch}}
+      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos-x86_64' && 'macosx' || matrix.os == 'macos-arm64' && 'macosx' || 'manylinux' }}
+      arch: ${{ matrix.os == 'windows' && matrix.arch == 'x86_64' && 'amd64' || matrix.arch || matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Install Boost
-        if: matrix.os == 'macos'
+        if: startsWith(matrix.os, 'macos') == true
         run: brew install boost
       - name: CI Buildwheel
         if: endsWith(github.ref, 'test') != true
@@ -63,7 +63,7 @@ jobs:
         run: dir ${{ github.workspace }}
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}-${{ matrix.arch }}-wheels
+          name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}-wheels
           path: ${{ github.workspace }}/*.whl
           if-no-files-found: error
           overwrite: true
@@ -72,16 +72,16 @@ jobs:
   test-packages:
     if: endsWith(github.ref, 'test') != true
     name: Test ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.pyver }}
-    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-${{ matrix.os == 'macos' && '13' || 'latest' }}
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-x86_64' && '13' || matrix.os == 'macos-arm64' && '14' || 'latest' }}
     needs: build-wheels
     strategy:
       fail-fast: false
       matrix:
-        os: [linux, windows, macos]
+        os: [linux, windows, macos-x86_64, macos-arm64]
         arch: [x86_64]
         pyver: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
     env:
-      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos' && 'macosx' || 'manylinux' }}
+      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos-x86_64' && 'macosx' || matrix.os == 'macos-arm64' && 'macosx' || 'manylinux' }}
       abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
 
     steps:
@@ -92,7 +92,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          name: ${{ matrix.os }}-${{ matrix.arch }}-wheels
+          name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}-wheels
       - name: List Artifacts Windows
         if: matrix.os == 'windows'
         run: dir ${{ github.workspace }}
@@ -111,17 +111,17 @@ jobs:
 
   test-packages-test:
     if: endsWith(github.ref, 'test')
-    name: Test Test ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.pyver }}
-    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-${{ matrix.os == 'macos' && '13' || 'latest' }}
+    name: Test Test ${{ matrix.os == 'macos-86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}-${{ matrix.pyver }}
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os == 'macos-x86_64' && 'macos' || matrix.os == 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-x86_64' && '13' || matrix.os == 'macos-arm64' && '14' || 'latest' }}
     needs: build-wheels
     strategy:
       fail-fast: false
       matrix:
-        os: [linux, windows, macos]
+        os: [linux, windows, macos-x86_64, macos-arm64]
         arch: [x86_64]
         pyver: ['3.7', '3.12']
     env:
-      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos' && 'macosx' || 'manylinux' }}
+      plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos-x86_64' && 'macosx' || matrix.os == 'macos-arm64' && 'macosx' || 'manylinux' }}
       abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
 
     steps:
@@ -132,7 +132,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          name: ${{ matrix.os }}-${{ matrix.arch }}-wheels
+          name: ${{ matrix.os == 'macos-x86_64' && 'macos' || matrix.os = 'macos-arm64' && 'macos' || matrix.os }}-${{ matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}-wheels
       - name: List Artifacts Windows
         if: matrix.os == 'windows'
         run: dir ${{ github.workspace }}
