@@ -2,6 +2,7 @@ import os
 import platform
 from setuptools import setup
 from setuptools.extension import Extension
+import subprocess
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 dynareadout_dir = os.path.join('lib', 'dynareadout')
@@ -21,6 +22,11 @@ else:
     link_args.append("-lpthread")
     if platform.system() == "Linux":
         link_args.append("-lstdc++fs")
+    elif platform.system() == "Darwin":
+        out = subprocess.run(["brew", "--prefix", "boost"], capture_output=True, text=True)
+        boost_prefix = str(out.stdout).strip()
+        cpp_args.append(f"-I{boost_prefix}/include")
+        link_args.append(f"-L{boost_prefix}/lib")
 
 ext_libraries = [[
     'dynareadout_c', {
