@@ -32,7 +32,7 @@ jobs:
         arch: [x86_64]
     env:
       plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos-x86_64' && 'macosx' || matrix.os == 'macos-arm64' && 'macosx' || 'manylinux' }}
-      arch: ${{ matrix.os == 'windows' && matrix.arch == 'x86_64' && 'amd64' || matrix.arch || matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}
+      arch: ${{ matrix.os == 'windows' && 'amd64' || matrix.os == 'macos-arm64' && 'arm64' || matrix.arch }}
 
     steps:
       - uses: actions/checkout@v4
