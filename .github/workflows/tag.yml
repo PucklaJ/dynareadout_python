@@ -45,14 +45,14 @@ jobs:
         if: endsWith(github.ref, 'test') != true
         uses: pypa/cibuildwheel@v2.17.0
         env:
-          CIBW_BUILD: "*-${{ env.plat }}_${{ env.arch }}"
+          CIBW_BUILD: "{cp38,cp39,cp310,cp311,cp312,pp38,pp39,pp310}-${{ env.plat }}_${{ env.arch }}"
         with:
           output-dir: ${{ github.workspace }}
       - name: CI Buildwheel Test
         if: endsWith(github.ref, 'test')
         uses: pypa/cibuildwheel@v2.17.0
         env:
-          CIBW_BUILD: "{cp37,cp312}-${{ env.plat }}_${{ env.arch }}"
+          CIBW_BUILD: "{cp38,cp312}-${{ env.plat }}_${{ env.arch }}"
         with:
           output-dir: ${{ github.workspace }}
       - name: List Artifacts
@@ -79,7 +79,7 @@ jobs:
       matrix:
         os: [linux, windows, macos-x86_64, macos-arm64]
         arch: [x86_64]
-        pyver: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
+        pyver: ['3.8', '3.9', '3.10', '3.11', '3.12']
     env:
       plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos-x86_64' && 'macosx' || matrix.os == 'macos-arm64' && 'macosx' || 'manylinux' }}
       abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
@@ -124,7 +124,7 @@ jobs:
       matrix:
         os: [linux, windows, macos-x86_64, macos-arm64]
         arch: [x86_64]
-        pyver: ['3.7', '3.12']
+        pyver: ['3.8', '3.12']
     env:
       plat: ${{ matrix.os == 'windows' && 'win' || matrix.os == 'macos-x86_64' && 'macosx' || matrix.os == 'macos-arm64' && 'macosx' || 'manylinux' }}
       abi: ${{ matrix.pyver == '3.12' && 'cp312-cp312' || matrix.pyver == '3.11' && 'cp311-cp311' || matrix.pyver == '3.10' && 'cp310-cp310' || matrix.pyver == '3.9' && 'cp39-cp39' || matrix.pyver == '3.8' && 'cp38-cp38' || matrix.pyver == '3.7' && 'cp37-cp37m' }}
