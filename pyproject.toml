@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "dynareadout"
 version = "24.05"
 authors = [
-  { name = "PucklaJ", email = "jonaas.pucher000000@gmail.com"},
+  { name = "PucklaJ", email = "kassandra@pucher.space"},
 ]
 description = "High-Performance and Thread-Safe library for parsing binary output files and key files of LS Dyna (d3plot, binout, input deck)"
 readme = "README.md"
