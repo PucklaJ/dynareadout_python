@@ -4,4 +4,3 @@
 [submodule "src/pybind11"]
 	path = lib/pybind11
 	url = https://github.com/pybind/pybind11.git
-	branch = v2.11.1
