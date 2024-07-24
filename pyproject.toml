@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dynareadout"
-version = "24.05"
+version = "24.07"
 authors = [
   { name = "PucklaJ", email = "kassandra@pucher.space"},
 ]

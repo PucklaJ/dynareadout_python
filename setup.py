@@ -86,7 +86,7 @@ dynareadout = Extension(
 )
 
 setup(name='dynareadout',
-      version='24.05',
+      version='24.07',
       ext_modules=[dynareadout],
       zip_safe=False,
       include_package_data=True,
